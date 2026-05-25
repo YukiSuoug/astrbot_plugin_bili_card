@@ -1,0 +1,11 @@
+name: astrbot_plugin_bilibili_card
+description: B站链接解析与卡片渲染插件，支持BV号、短链接、QQ小程序解析，生成美观的视频总结卡片
+version: 1.0.0
+author: YourName
+repo: https://github.com/yourname/astrbot_plugin_bilibili_card
+display_name: B站卡片解析器
+short_desc: 自动解析B站链接并生成精美卡片
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp
+  - qqbot

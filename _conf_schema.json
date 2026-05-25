@@ -1,0 +1,56 @@
+{
+  "enable_image_render": {
+    "description": "启用图片总结卡片",
+    "type": "bool",
+    "default": true,
+    "hint": "开启后将生成精美的视频总结卡片图片"
+  },
+  "enable_video_send": {
+    "description": "发送视频直链",
+    "type": "bool",
+    "default": false,
+    "hint": "开启后将发送视频下载直链"
+  },
+  "show_stats": {
+    "description": "展示统计数据",
+    "type": "bool",
+    "default": true,
+    "hint": "在卡片中显示点赞、投币、收藏数"
+  },
+  "show_comments": {
+    "description": "展示热门评论",
+    "type": "bool",
+    "default": true,
+    "hint": "在卡片中显示热门评论（最多3条）"
+  },
+  "bili_cookie": {
+    "description": "B站Cookie",
+    "type": "text",
+    "default": "",
+    "hint": "可选，用于获取高清数据。从浏览器F12 -> Network -> Cookie获取"
+  },
+  "render_engine": {
+    "description": "渲染引擎",
+    "type": "string",
+    "default": "pil",
+    "options": [
+      {"label": "PIL (低内存)", "value": "pil"},
+      {"label": "Playwright (高质量)", "value": "playwright"}
+    ],
+    "hint": "PIL内存占用低，Playwright渲染效果更好"
+  },
+  "max_comments": {
+    "description": "最大评论数",
+    "type": "int",
+    "default": 3,
+    "min": 0,
+    "max": 10,
+    "hint": "卡片中显示的热门评论数量"
+  },
+  "cache_expire": {
+    "description": "缓存过期时间(秒)",
+    "type": "int",
+    "default": 3600,
+    "hint": "视频元数据缓存时间，避免频繁请求API"
+  }
+}
