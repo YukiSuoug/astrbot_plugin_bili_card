@@ -5,6 +5,7 @@ from typing import Optional
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star
 from astrbot.api import logger
+from astrbot.core.message.components import Image
 
 from .core.api import BiliAPI, VideoInfo
 from .core.parser import MessageParser
@@ -84,7 +85,7 @@ class BilibiliCardPlugin(Star):
                         show_comments=self.config.get("show_comments", True),
                         max_comments=self.config.get("max_comments", 3),
                     )
-                    yield event.image_result(image_bytes)
+                    yield event.chain_result([Image.fromBytes(image_bytes)])
                 except Exception as e:
                     logger.error(f"[BiliCard] 渲染卡片失败: {e}", exc_info=True)
                     # 降级为文本发送
