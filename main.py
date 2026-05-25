@@ -2,7 +2,7 @@
 import asyncio
 from typing import Optional
 
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
+from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star
 from astrbot.api import logger
 
@@ -40,7 +40,7 @@ class BilibiliCardPlugin(Star):
 
             logger.info(f"[BiliCard] 插件初始化完成，渲染引擎: {engine}")
 
-    @filter.event_message_type(filter.EventMessageType.ALL_MESSAGE)
+    @filter.event_message_type(filter.EventMessageType.ALL)
     async def on_message(self, event: AstrMessageEvent):
         """监听所有消息"""
         await self._ensure_initialized()
@@ -77,7 +77,19 @@ class BilibiliCardPlugin(Star):
 
             # 生成卡片图片
             if self.config.get("enable_image_render", True):
-                await self._send_card(event, video_info)
+                try:
+                    image_bytes = await self.renderer.render_card(
+                        video_info,
+                        show_stats=self.config.get("show_stats", True),
+                        show_comments=self.config.get("show_comments", True),
+                        max_comments=self.config.get("max_comments", 3),
+                    )
+                    yield event.image_result(image_bytes)
+                except Exception as e:
+                    logger.error(f"[BiliCard] 渲染卡片失败: {e}", exc_info=True)
+                    # 降级为文本发送
+                    text = self._format_text_summary(video_info)
+                    yield event.plain_result(text)
 
             # 发送视频直链
             if self.config.get("enable_video_send", False):
@@ -86,26 +98,6 @@ class BilibiliCardPlugin(Star):
 
         except Exception as e:
             logger.error(f"[BiliCard] 处理异常: {e}", exc_info=True)
-
-    async def _send_card(self, event: AstrMessageEvent, video_info: VideoInfo):
-        """发送卡片图片"""
-        try:
-            image_bytes = await self.renderer.render_card(
-                video_info,
-                show_stats=self.config.get("show_stats", True),
-                show_comments=self.config.get("show_comments", True),
-                max_comments=self.config.get("max_comments", 3),
-            )
-
-            # 通过AstrBot发送图片
-            result = event.image_result(image_bytes)
-            yield result
-
-        except Exception as e:
-            logger.error(f"[BiliCard] 渲染卡片失败: {e}", exc_info=True)
-            # 降级为文本发送
-            text = self._format_text_summary(video_info)
-            yield event.plain_result(text)
 
     def _format_text_summary(self, video_info: VideoInfo) -> str:
         """格式化文本摘要（降级方案）"""
